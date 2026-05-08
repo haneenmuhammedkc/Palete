@@ -35,16 +35,23 @@ const categorySchema = new mongoose.Schema(
          type: Number,
          default: 0
       },
-      offers:{
-
-      },
       availabilityTiming:{
 
-      }
+      },
+      disabledAt: {
+         type: Date
+      },
+
+      disabledBy: {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Employee"
+      },
    },
+   
    {
       timestamps: true
-   }
+   },
+   
 );
 
 export default mongoose.model(

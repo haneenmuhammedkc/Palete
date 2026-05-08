@@ -10,4 +10,10 @@ categoryRoutes.post("/", createCategory);
 // Get all categories
 categoryRoutes.get("/", getCategories);
 
+router.patch("/:id", updateCategory);
+
+router.patch("/:id/disable",disableCategory);
+
+router.patch("/:id/enable",enableCategory);
+
 export default categoryRoutes;
