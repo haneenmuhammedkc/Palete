@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMenu, addCategory, addMenuItem, updateMenuItem, deleteMenuItem } from '../controllers/menuController.js';
+import { getMenu, addCategory, addMenuItem, updateMenuItem, deleteMenuItem } from '../controllers/menu.controller.js';
 
 const router = express.Router();
 
