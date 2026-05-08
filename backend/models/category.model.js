@@ -17,15 +17,6 @@ const categorySchema = new mongoose.Schema(
          trim: true
       },
 
-      description: {
-         type: String,
-         trim: true
-      },
-
-      image: {
-         type: String
-      },
-
       isActive: {
          type: Boolean,
          default: true
@@ -34,17 +25,6 @@ const categorySchema = new mongoose.Schema(
       sortOrder: {
          type: Number,
          default: 0
-      },
-      availabilityTiming:{
-
-      },
-      disabledAt: {
-         type: Date
-      },
-
-      disabledBy: {
-         type: mongoose.Schema.Types.ObjectId,
-         ref: "Employee"
       },
    },
    
