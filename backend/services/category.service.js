@@ -42,3 +42,16 @@ export const disableCategory = async (categoryId,adminId) => {
    await category.save();
    return category;
 };
+
+
+export const enableCategory = async (categoryId) => {
+
+   const category = await Category.findById(categoryId);
+   if (!category) {
+      throw new Error("Category not found");
+   }
+   category.isActive = true;
+   await category.save();
+
+   return category;
+};

@@ -1,12 +1,15 @@
-import express from 'express';
-import { getMenu, addCategory, addMenuItem, updateMenuItem, deleteMenuItem } from '../controllers/menu.controller.js';
+import express from "express";
 
-const router = express.Router();
+import {createMenuItem, updateMenuItem, disableMenuItem, enableMenuItem, getMenuItems, getMenuByCategory, getSingleMenuItem} from "../controllers/menu.controller.js";
 
-router.get('/', getMenu);
-router.post('/category', addCategory);
-router.post('/item', addMenuItem);
-router.put('/item/:itemId', updateMenuItem);
-router.delete('/item/:itemId', deleteMenuItem);
+const menuRoutes = express.Router();
 
-export default router;
+menuRoutes.post("/", createMenuItem);
+menuRoutes.patch("/:id", updateMenuItem);
+menuRoutes.patch("/:id/disable", disableMenuItem);
+menuRoutes.patch("/:id/enable", enableMenuItem);
+menuRoutes.get("/", getMenuItems);
+menuRoutes.get("/category/:categoryId", getMenuByCategory);
+menuRoutes.get("/:id", getSingleMenuItem);
+
+export default menuRoutes;
