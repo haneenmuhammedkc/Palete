@@ -1,8 +1,15 @@
 import MenuItem from "../models/menu.model.js";
 import Category from "../models/category.model.js"
+import slugify from "slugify";
 
 
 export const createMenuItem = async (data) => {
+
+    const slug = slugify(data.name, {
+      lower: true,
+      strict: true,
+      trim: true
+   });
 
    const categoryExists = await Category.findById(data.category);
 
@@ -10,13 +17,13 @@ export const createMenuItem = async (data) => {
       throw new Error("Category not found");
    }
 
-   const existingMenu =  await MenuItem.findOne({ slug: data.slug});
+   const existingMenu =  await MenuItem.findOne({slug});
 
    if (existingMenu) {
       throw new Error("Menu item already exists");
    }
 
-   const menuItem = await MenuItem.create(data);
+   const menuItem = await MenuItem.create({...data,slug});
    return menuItem;
 };
 
@@ -90,3 +97,4 @@ export const getSingleMenuItem = async (menuId) => {
    }
    return menuItem;
 };
+

@@ -1,14 +1,21 @@
 import Category from "../models/category.model.js";
+import slugify from "slugify";
 
 
 // add category
 export const createCategory = async (data) => {
 
-   const existingCategory = await Category.findOne({slug: data.slug});
+    const slug = slugify(data.name, {
+      lower: true,
+      strict: true,
+      trim: true
+   });
+
+   const existingCategory = await Category.findOne({slug});
    if (existingCategory) {
       throw new Error("Category already exists");
    }
-   const category = await Category.create(data);
+   const category = await Category.create({...data,slug});
    return category;
 };
 
