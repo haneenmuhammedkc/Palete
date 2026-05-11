@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import { Search, Bell, MessageSquare, Plus, MoreHorizontal, Copy, Edit3, Flame, Check, UtensilsCrossed } from 'lucide-react'
 import AdminSidebar from '../AdminComponents/AdminSidebar'
 
-const CATEGORIES = [
-  { id: 'starters', name: 'Starters', icon: <UtensilsCrossed size={18} />, count: 12 },
-  { id: 'main', name: 'Main Course', icon: <UtensilsCrossed size={18} />, count: 24 },
-  { id: 'desserts', name: 'Desserts', icon: <UtensilsCrossed size={18} />, count: 8 },
-  { id: 'drinks', name: 'Beverages', icon: <UtensilsCrossed size={18} />, count: 15 },
-]
 
 const DISHES = [
   {
@@ -40,9 +35,10 @@ const DISHES = [
 ]
 
 const App = () => {
-  const [activeCategory, setActiveCategory] = useState('starters');
+  const [activeCategory, setActiveCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState(DISHES);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
 
   const [categories, setCategories] =
       useState([]);
@@ -58,6 +54,43 @@ const App = () => {
       useState({
          name: "",
       });
+
+
+  const fetchCategories = async () => {
+
+   try {
+
+      setCategoriesLoading(true);
+
+      const response = await axios.get(
+         "http://localhost:3001/api/categories"
+      );
+
+      const data = response.data.data;
+
+      setCategories(data);
+
+      if (data.length > 0) {
+         setActiveCategory(data[0]._id);
+      }
+
+   } catch (error) {
+
+      console.log(
+         error.response?.data || error.message
+      );
+
+   } finally {
+
+      setCategoriesLoading(false);
+   }
+};
+
+useEffect(() => {
+
+   fetchCategories();
+
+}, []);
 
    const handleChange = (e) => {
 
@@ -78,26 +111,30 @@ const App = () => {
          setLoading(true);
 
          const response = await axios.post(
-            "http://localhost:5000/api/categories",
+            "http://localhost:3001/api/categories",
             formData
          );
 
-         setCategories((prev) => [
-            response.data.data,
-            ...prev
-         ]);
+        const newCategory = response.data.data;
+
+setCategories((prev) => [
+   newCategory,
+   ...prev
+]);
+
+setActiveCategory(newCategory._id);
 
          setFormData({
-            name: "",
-            slug: "",
-            description: ""
+            name: ""
          });
 
          setShowModal(false);
 
       } catch (error) {
 
-         console.log(error);
+         console.log(
+   error.response?.data || error.message
+);
 
       } finally {
 
@@ -111,7 +148,9 @@ const App = () => {
     ))
   }
 
-  
+const activeCategoryData = categories.find(
+   (cat) => cat._id === activeCategory
+);  
 
   return (
     <>
@@ -170,26 +209,31 @@ const App = () => {
             </div>
 
             <div className="space-y-2">
-              {CATEGORIES.map((cat) => (
+              {categoriesLoading && (
+   <p className="text-sm text-zinc-500">
+      Loading categories...
+   </p>
+)}
+              {categories.map((cat) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
+                  key={cat._id}
+                  onClick={() => setActiveCategory(cat._id)}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
-                    activeCategory === cat.id 
+                    activeCategory === cat._id 
                     ? 'bg-white text-black font-bold shadow-lg shadow-white/5' 
                     : 'text-[#888] hover:bg-[#161616] hover:text-[#BBB]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className={activeCategory === cat.id ? 'text-black' : 'text-[#555] group-hover:text-white transition-colors'}>
-                      {cat.icon}
+                    <span className={activeCategory === cat._id ? 'text-black' : 'text-[#555] group-hover:text-white transition-colors'}>
+                      <UtensilsCrossed size={18} />
                     </span>
                     <span className="text-sm">{cat.name}</span>
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                    activeCategory === cat.id ? 'bg-black/10 text-black' : 'bg-[#1A1A1A] text-[#555]'
+                    activeCategory === cat._id ? 'bg-black/10 text-black' : 'bg-[#1A1A1A] text-[#555]'
                   }`}>
-                    {cat.count}
+                    0
                   </span>
                 </button>
               ))}
@@ -213,7 +257,7 @@ const App = () => {
           <main className="flex-1 overflow-y-auto p-10 bg-[#0B0B0B]">
             <div className="flex justify-between items-center mb-10">
               <div>
-                <h2 className="text-4xl font-black text-white mb-2 capitalize tracking-tight">{activeCategory}</h2>
+                <h2 className="text-4xl font-black text-white mb-2 capitalize tracking-tight">{activeCategoryData?.name || "Categories"}</h2>
                 <p className="text-[#666] text-sm">Curate and manage your premium selection for this category.</p>
               </div>
               <button className="bg-white text-black px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-[#EEE] active:scale-95 transition-all shadow-xl shadow-white/5">
@@ -342,7 +386,7 @@ const App = () => {
                            onChange={handleChange}
                            placeholder="Starters"
                            required
-                           className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-white transition"
+                           className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-white transition text-white"
                         />
 
                      </div>
