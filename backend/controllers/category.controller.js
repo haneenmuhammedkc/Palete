@@ -38,3 +38,15 @@ export const disableCategory = async (req,res) => {
       res.status(400).json({ success: false, message: error.message});
    }
 };
+
+
+export const enableCategory = async (req, res) => {
+   try {
+      const category = await categoryService.enableCategory( req.params.id);
+
+      res.status(200).json({ success: true, message: "Category enabled",data: category});
+
+   } catch (error) {
+      res.status(400).json({ success: false, message: error.message});
+   }
+};

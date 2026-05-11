@@ -1,47 +1,71 @@
-import Category from '../models/Category.js';
-import MenuItem from '../models/menu.model.js';
+import * as menuService from "../services/menu.service.js";
 
-// Get all categories and menu items
-export const getMenu = async (req, res) => {
-    try {
-        res.status(200).json({ message: "Menu retrieved" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+export const createMenuItem = async ( req, res) => {
+
+   try {
+      const menuItem = await menuService.createMenuItem(
+            req.body
+         );
+      res.status(201).json({success: true,data: menuItem });
+   } catch (error) {
+      res.status(400).json({success: false, message: error.message});
+   }
 };
 
-// Admin: Add a category
-export const addCategory = async (req, res) => {
-    try {
-        res.status(201).json({ message: "Category added" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+export const updateMenuItem = async (req,res) => {
+   try {
+      const menuItem = await menuService.updateMenuItem( req.params.id, req.body);
+      res.status(200).json({success: true,data: menuItem });
+   } catch (error) {
+      res.status(400).json({ success: false, message: error.message
+      });
+   }
 };
 
-// Admin: Add a menu item
-export const addMenuItem = async (req, res) => {
-    try {
-        res.status(201).json({ message: "Menu item added" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+export const disableMenuItem = async ( req, res) => {
+
+   try {
+      const menuItem = await menuService.disableMenuItem( req.params.id );
+      res.status(200).json({success: true, message: "Menu item disabled", data: menuItem });
+   } catch (error) {
+      res.status(400).json({ success: false, message: error.message});
+   }
 };
 
-// Admin: Update menu item
-export const updateMenuItem = async (req, res) => {
-    try {
-        res.status(200).json({ message: "Menu item updated" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+export const enableMenuItem = async ( req, res) => {
+
+   try {
+      const menuItem = await menuService.enableMenuItem(req.params.id);
+      res.status(200).json({ success: true, message: "Menu item enabled", data: menuItem});
+
+   } catch (error) {
+      res.status(400).json({success: false, message: error.message});
+   }
 };
 
-// Admin: Delete menu item
-export const deleteMenuItem = async (req, res) => {
-    try {
-        res.status(200).json({ message: "Menu item deleted" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+export const getMenuItems = async ( req,res) => {
+   try {
+      const menuItems = await menuService.getMenuItems();
+      res.status(200).json({ success: true, data: menuItems});
+   } catch (error) {
+      res.status(500).json({success: false, message: error.message});
+   }
+};
+
+export const getMenuByCategory = async (req,res) => {
+   try {
+      const menuItems = await menuService.getMenuByCategory( req.params.categoryId);
+      res.status(200).json({ success: true, data: menuItems});
+   } catch (error) {
+      res.status(500).json({ success: false, message: error.message});
+   }
+};
+
+export const getSingleMenuItem = async ( req,res) => {
+   try {
+      const menuItem = await menuService.getSingleMenuItem( req.params.id );
+      res.status(200).json({success: true, data: menuItem});
+   } catch (error) {
+      res.status(404).json({ success: false, message: error.message});
+   }
 };

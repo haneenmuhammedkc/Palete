@@ -1,13 +1,6 @@
 import React from 'react'
-import {
-  LayoutDashboard,
-  UtensilsCrossed,
-  ReceiptText,
-  BadgeCheck,
-  BarChart3,
-  Settings,
-  LogOut
-} from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ReceiptText, BadgeCheck, BarChart3, Settings, LogOut } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const AdminSidebar = () => {
   return (
@@ -38,33 +31,39 @@ const AdminSidebar = () => {
         <NavItem
           icon={<LayoutDashboard size={20} />}
           label="Dashboard"
+          to="/admin/dashboard"
         />
 
         <NavItem
           icon={<UtensilsCrossed size={20} />}
           label="Menu Items"
+          to="/admin/menuitems"
           active
         />
 
         <NavItem
           icon={<ReceiptText size={20} />}
           label="Orders"
+          to="/admin/orders"
           badge="5"
         />
 
         <NavItem
           icon={<BadgeCheck size={20} />}
           label="Employees"
+          to="/admin/employees"
         />
 
         <NavItem
           icon={<BarChart3 size={20} />}
           label="Analytics"
+          to="/admin/analytics"
         />
 
         <NavItem
           icon={<Settings size={20} />}
           label="Settings"
+          to="/admin/settings"
         />
 
       </nav>
@@ -87,8 +86,15 @@ const AdminSidebar = () => {
   )
 }
 
-const NavItem = ({ icon, label, active = false, badge }) => (
-  <button
+const NavItem = ({
+  icon,
+  label,
+  active = false,
+  badge,
+  to
+}) => (
+  <Link
+    to={to}
     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
       active
         ? 'bg-[#1A1A1A] text-white'
@@ -115,12 +121,12 @@ const NavItem = ({ icon, label, active = false, badge }) => (
     </div>
 
     {badge && (
-      <span className="bg-white text-black text-[10px] font-black px-1.5 rounded-sm min-w-4.5">
+      <span className="bg-white text-black text-[10px] font-black px-1.5 rounded-sm min-w-[18px] text-center">
         {badge}
       </span>
     )}
 
-  </button>
+  </Link>
 )
 
 export default AdminSidebar

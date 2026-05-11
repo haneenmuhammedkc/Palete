@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
 const ingredientSchema = new mongoose.Schema(
    {
@@ -97,9 +97,9 @@ const menuItemSchema = new mongoose.Schema(
    {
       timestamps: true
    }
-);
+)
 
 export default mongoose.model(
    "MenuItem",
    menuItemSchema
-);
+)
