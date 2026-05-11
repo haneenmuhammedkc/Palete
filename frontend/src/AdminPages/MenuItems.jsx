@@ -44,13 +44,77 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState(DISHES);
 
+  const [categories, setCategories] =
+      useState([]);
+
+   const [showModal, setShowModal] =
+      useState(false);
+
+   const [loading, setLoading] =
+      useState(false);
+
+
+      const [formData, setFormData] =
+      useState({
+         name: "",
+      });
+
+   const handleChange = (e) => {
+
+      setFormData({
+         ...formData,
+         [e.target.name]: e.target.value
+      });
+   };
+
+
+
+   const handleSubmit = async (e) => {
+
+      e.preventDefault();
+
+      try {
+
+         setLoading(true);
+
+         const response = await axios.post(
+            "http://localhost:5000/api/categories",
+            formData
+         );
+
+         setCategories((prev) => [
+            response.data.data,
+            ...prev
+         ]);
+
+         setFormData({
+            name: "",
+            slug: "",
+            description: ""
+         });
+
+         setShowModal(false);
+
+      } catch (error) {
+
+         console.log(error);
+
+      } finally {
+
+         setLoading(false);
+      }
+   };
+
   const toggleAvailability = (id) => {
     setItems(prev => prev.map(item => 
       item.id === id ? { ...item, available: !item.available } : item
     ))
   }
 
+  
+
   return (
+    <>
     <div className="flex min-h-screen bg-[#0B0B0B] text-[#E0E0E0] font-sans selection:bg-white selection:text-black">
       
       <AdminSidebar />
@@ -100,7 +164,7 @@ const App = () => {
           <aside className="w-80 border-r border-[#262626] p-8 flex flex-col gap-8 bg-[#0D0D0D]">
             <div className="flex items-center justify-between">
               <h2 className="text-sm uppercase tracking-widest font-bold text-[#555]">Categories</h2>
-              <button className="p-1.5 rounded-lg bg-[#161616] text-[#888] hover:text-white hover:bg-[#222] transition-colors">
+              <button  onClick={() => setShowModal(true)} className="p-1.5 rounded-lg bg-[#161616] text-[#888] hover:text-white hover:bg-[#222] transition-colors">
                 <Plus size={16} />
               </button>
             </div>
@@ -220,8 +284,108 @@ const App = () => {
         </div>
       </div>
     </div>
+
+       {showModal && (
+
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+
+               {/* Modal Box */}
+
+               <div className="w-[420px] bg-zinc-950 border border-zinc-800 rounded-3xl p-6 shadow-2xl">
+
+                  {/* Header */}
+
+                  <div className="flex items-center justify-between mb-6">
+
+                     <div>
+
+                        <h2 className="text-2xl font-bold">
+                           Add Category
+                        </h2>
+
+                        <p className="text-zinc-400 text-sm mt-1">
+                           Create a new menu category
+                        </p>
+
+                     </div>
+
+                     <button
+                        onClick={() =>
+                           setShowModal(false)
+                        }
+                        className="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition"
+                     >
+                        ✕
+                     </button>
+
+                  </div>
+
+                  {/* Form */}
+
+                  <form
+                     onSubmit={handleSubmit}
+                     className="space-y-4"
+                  >
+
+                     {/* Name */}
+
+                     <div>
+
+                        <label className="text-sm text-zinc-400 mb-2 block">
+                           Category Name
+                        </label>
+
+                        <input
+                           type="text"
+                           name="name"
+                           value={formData.name}
+                           onChange={handleChange}
+                           placeholder="Starters"
+                           required
+                           className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-white transition"
+                        />
+
+                     </div>
+
+                  
+
+                     <div className="flex items-center gap-3 pt-2">
+
+                        <button
+                           type="button"
+                           onClick={() =>
+                              setShowModal(false)
+                           }
+                           className="flex-1 bg-zinc-900 hover:bg-zinc-800 transition rounded-xl py-3"
+                        >
+                           Cancel
+                        </button>
+
+                        <button
+                           type="submit"
+                           disabled={loading}
+                           className="flex-1 bg-white text-black font-semibold rounded-xl py-3 hover:opacity-90 transition"
+                        >
+                           {
+                              loading
+                                 ? "Creating..."
+                                 : "Create"
+                           }
+                        </button>
+
+                     </div>
+
+                  </form>
+
+               </div>
+
+            </div>
+         )}
+    </>
   );
 };
+
+ 
 
 const HeaderAction = ({ icon, dot }) => (
   <button className="p-2.5 rounded-xl bg-[#161616] border border-[#262626] text-[#888] hover:text-white hover:border-[#444] transition-all relative cursor-pointer">

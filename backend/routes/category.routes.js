@@ -1,13 +1,12 @@
 import express from "express";
-import { createCategory, getCategories } from "../controllers/category.controller.js";
-
+import { createCategory, disableCategory, enableCategory, getCategories, updateCategory } from "../controllers/category.controller.js";
 
 const categoryRoutes = express.Router();
 
-// Create category
 categoryRoutes.post("/", createCategory);
-
-// Get all categories
 categoryRoutes.get("/", getCategories);
+categoryRoutes.patch("/:id", updateCategory);
+categoryRoutes.patch("/:id/disable",disableCategory);
+categoryRoutes.patch("/:id/enable",enableCategory);
 
 export default categoryRoutes;
