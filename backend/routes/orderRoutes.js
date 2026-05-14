@@ -1,11 +1,8 @@
-import express from 'express';
-import { placeOrder, trackOrder, getLiveQueue, updateOrderStatus } from '../controllers/orderController.js';
+import express from "express"
+import { placeOrder } from "../controllers/orderController.js";
 
-const router = express.Router();
+const orderRouter = express.Router();
 
-router.post('/', placeOrder);
-router.get('/:orderId', trackOrder);
-router.get('/queue/live', getLiveQueue);
-router.patch('/:orderId/status', updateOrderStatus);
+orderRouter.post("/place-order",placeOrder);
 
-export default router;
+export default orderRouter;
