@@ -8,12 +8,17 @@ import AdminEmployees from './AdminPages/AdminEmployees'
 import AdminOrders from './AdminPages/AdminOrders'
 import AdminSettings from './AdminPages/AdminSettings'
 import LandingPage from './UserPages/LandingPage'
+import MenuPage from './UserPages/MenuPage'
+import AdminLogin from './AdminPages/AdminLogin'
 
 const App = () => {
   return (
     <div>
       <BrowserRouter>
         <Routes>
+
+          {/* AdminPages */}
+          <Route path='admin/login' element={<AdminLogin />} />
           <Route path='admin/menuitems' element={<MenuItems />} />
           <Route path='admin/addmenuitems' element={<AddMenuItems />} />
           <Route path='admin/analytics' element={<AdminAnalytics />} />
@@ -22,7 +27,10 @@ const App = () => {
           <Route path='admin/orders' element={<AdminOrders />} />
           <Route path='admin/settings' element={<AdminSettings />} />
 
+          {/* UserPages */}
+          <Route path='user/menu' element={<MenuPage />} />
           <Route path='user/landing' element={<LandingPage />} />
+
         </Routes>
       </BrowserRouter>
     </div>
