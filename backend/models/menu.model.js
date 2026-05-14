@@ -50,7 +50,7 @@ const menuItemSchema = new mongoose.Schema(
          type: String
       },
 
-      gallery: [String],
+      // gallery: [String],
 
       price: {
          type: Number,

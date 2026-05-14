@@ -5,6 +5,7 @@ import cors from "cors";
 import categoryRoutes from "./routes/category.routes.js";
 import connectDB from "./config/db.js";
 import menuRoutes from "./routes/menu.routes.js";
+import orderRouter from "./routes/orderRoutes.js";
 
 
 
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/categories",categoryRoutes);
 app.use('/api/menu',menuRoutes)
+app.use('/api/orders',orderRouter)
 
 
 // Test Route

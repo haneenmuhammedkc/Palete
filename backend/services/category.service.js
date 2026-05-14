@@ -9,7 +9,7 @@ export const createCategory = async (data) => {
       lower: true,
       strict: true,
       trim: true
-   });
+    });
 
    const existingCategory = await Category.findOne({slug});
    if (existingCategory) {
