@@ -1,7 +1,129 @@
-import React from "react"
+import axios from "axios"
+import React, { useState, useEffect } from "react";
 import AdminSidebar from "../AdminComponents/AdminSidebar"
 
 const AddMenuItems = () => {
+  const [formData, setFormData] = useState({
+  name: "",
+  description: "",
+  category: "",
+  price: "",
+  availability: true,
+  ingredients: []
+});
+
+const [categories, setCategories] = useState([]);
+const [ingredientInput, setIngredientInput] = useState("");
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  fetchCategories();
+}, []);
+
+const fetchCategories = async () => {
+  try {
+
+    const response = await axios.get(
+      "http://localhost:5000/api/categories"
+    );
+
+    setCategories(response.data.data);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+const handleChange = (e) => {
+
+  const { name, value, type, checked } = e.target;
+
+  setFormData({
+    ...formData,
+    [name]: type === "checkbox"
+      ? checked
+      : value
+  });
+};
+
+const handleIngredientKeyDown = (e) => {
+
+  if (e.key === "Enter" && ingredientInput.trim()) {
+
+    e.preventDefault();
+
+    setFormData({
+      ...formData,
+      ingredients: [
+        ...formData.ingredients,
+        {
+          ingredientName: ingredientInput,
+          quantity: 1
+        }
+      ]
+    });
+
+    setIngredientInput("");
+  }
+};
+
+const removeIngredient = (index) => {
+
+  const updatedIngredients = [...formData.ingredients];
+
+  updatedIngredients.splice(index, 1);
+
+  setFormData({
+    ...formData,
+    ingredients: updatedIngredients
+  });
+};
+
+const handleSubmit = async () => {
+
+  try {
+
+    setLoading(true);
+
+    const payload = {
+      ...formData,
+      price: Number(formData.price)
+    };
+
+    const response = await axios.post(
+      "http://localhost:3001/api/menu",
+      payload
+    );
+
+    console.log(response.data);
+
+    alert("Menu item created successfully");
+
+    setFormData({
+      name: "",
+      description: "",
+      category: "",
+      price: "",
+      availability: true,
+      ingredients: []
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      error.response?.data?.message ||
+      "Something went wrong"
+    );
+
+  } finally {
+
+    setLoading(false);
+  }
+};
+
   return (
     <div className="bg-[#131313] text-[#e5e2e1] min-h-screen ml-64 px-8 py-10">
 
@@ -35,10 +157,12 @@ const AddMenuItems = () => {
         <label className="relative inline-flex items-center cursor-pointer">
 
           <input
-            type="checkbox"
-            defaultChecked
-            className="sr-only peer"
-          />
+  type="checkbox"
+  name="availability"
+  checked={formData.availability}
+  onChange={handleChange}
+  className="sr-only peer"
+/>
 
           <div className="w-11 h-6 bg-[#353534] rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:w-5 after:h-5 after:rounded-full after:transition-all peer-checked:after:translate-x-full"></div>
 
@@ -133,10 +257,13 @@ const AddMenuItems = () => {
                 </label>
 
                 <input
-                  type="text"
-                  placeholder="e.g. Truffle Infused Risotto"
-                  className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg px-4 py-3 text-white outline-none focus:border-white"
-                />
+  type="text"
+  name="name"
+  value={formData.name}
+  onChange={handleChange}
+  placeholder="e.g. Truffle Infused Risotto"
+  className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg px-4 py-3 text-white outline-none focus:border-white"
+/>
 
               </div>
 
@@ -152,11 +279,14 @@ const AddMenuItems = () => {
                     $
                   </span>
 
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg pl-8 pr-4 py-3 text-white outline-none focus:border-white"
-                  />
+                 <input
+  type="number"
+  name="price"
+  value={formData.price}
+  onChange={handleChange}
+  placeholder="0.00"
+  className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg pl-8 pr-4 py-3 text-white outline-none focus:border-white"
+/>
 
                 </div>
 
@@ -173,47 +303,34 @@ const AddMenuItems = () => {
 
               <div className="grid grid-cols-4 gap-2">
 
-                <button className="py-4 px-2 rounded-lg border border-[#2B2B2B] hover:border-white transition text-center">
-                  <span className="material-symbols-outlined block mb-1 text-[#c4c7c8]">
-                    restaurant
-                  </span>
+  {categories.map((cat) => (
 
-                  <span className="text-xs">
-                    Starters
-                  </span>
-                </button>
+    <button
+      key={cat._id}
+      type="button"
+      onClick={() =>
+        setFormData({
+          ...formData,
+          category: cat._id
+        })
+      }
+      className={`py-4 px-2 rounded-lg border text-center transition
+      ${
+        formData.category === cat._id
+          ? "border-white bg-white/5"
+          : "border-[#2B2B2B]"
+      }`}
+    >
 
-                <button className="py-4 px-2 rounded-lg border-2 border-white bg-white/5 text-center">
-                  <span className="material-symbols-outlined block mb-1 text-white">
-                    dinner_dining
-                  </span>
+      <span className="text-xs">
+        {cat.name}
+      </span>
 
-                  <span className="text-xs font-semibold">
-                    Mains
-                  </span>
-                </button>
+    </button>
 
-                <button className="py-4 px-2 rounded-lg border border-[#2B2B2B] hover:border-white transition text-center">
-                  <span className="material-symbols-outlined block mb-1 text-[#c4c7c8]">
-                    cake
-                  </span>
+  ))}
 
-                  <span className="text-xs">
-                    Desserts
-                  </span>
-                </button>
-
-                <button className="py-4 px-2 rounded-lg border border-[#2B2B2B] hover:border-white transition text-center">
-                  <span className="material-symbols-outlined block mb-1 text-[#c4c7c8]">
-                    local_bar
-                  </span>
-
-                  <span className="text-xs">
-                    Beverages
-                  </span>
-                </button>
-
-              </div>
+</div>
 
             </div>
 
@@ -225,10 +342,13 @@ const AddMenuItems = () => {
               </label>
 
               <textarea
-                rows="4"
-                placeholder="Describe the flavors, textures, and presentation..."
-                className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg px-4 py-3 text-white outline-none focus:border-white resize-none"
-              ></textarea>
+  rows="4"
+  name="description"
+  value={formData.description}
+  onChange={handleChange}
+  placeholder="Describe the flavors, textures, and presentation..."
+  className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg px-4 py-3 text-white outline-none focus:border-white resize-none"
+></textarea>
 
             </div>
 
@@ -239,39 +359,38 @@ const AddMenuItems = () => {
                 Key Ingredients
               </label>
 
-              <input
-                type="text"
-                placeholder="Add an ingredient (Press Enter)"
-                className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg px-4 py-3 text-white outline-none focus:border-white"
-              />
+             <input
+  type="text"
+  value={ingredientInput}
+  onChange={(e) => setIngredientInput(e.target.value)}
+  onKeyDown={handleIngredientKeyDown}
+  placeholder="Add an ingredient (Press Enter)"
+  className="w-full bg-[#1c1b1b] border border-[#2B2B2B] rounded-lg px-4 py-3 text-white outline-none focus:border-white"
+/>
 
               <div className="flex flex-wrap gap-2 mt-3">
 
-                <span className="inline-flex items-center gap-1 bg-[#353534] px-3 py-1 rounded text-xs text-white">
-                  Italian Truffle
+  {formData.ingredients.map((item, index) => (
 
-                  <span className="material-symbols-outlined text-[14px] cursor-pointer">
-                    close
-                  </span>
-                </span>
+    <span
+      key={index}
+      className="inline-flex items-center gap-1 bg-[#353534] px-3 py-1 rounded text-xs text-white"
+    >
 
-                <span className="inline-flex items-center gap-1 bg-[#353534] px-3 py-1 rounded text-xs text-white">
-                  Arborio Rice
+      {item.ingredientName}
 
-                  <span className="material-symbols-outlined text-[14px] cursor-pointer">
-                    close
-                  </span>
-                </span>
+      <span
+        onClick={() => removeIngredient(index)}
+        className="material-symbols-outlined text-[14px] cursor-pointer"
+      >
+        close
+      </span>
 
-                <span className="inline-flex items-center gap-1 bg-[#353534] px-3 py-1 rounded text-xs text-white">
-                  Parmesan
+    </span>
 
-                  <span className="material-symbols-outlined text-[14px] cursor-pointer">
-                    close
-                  </span>
-                </span>
+  ))}
 
-              </div>
+</div>
 
             </div>
 
